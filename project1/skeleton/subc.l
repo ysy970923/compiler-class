@@ -23,26 +23,43 @@
 {Other useful code segments can be here.}
 ***************************************************************/
 int commentdepth=0;
+id* yylval;
 %}
 
+ws [ \t\n\v\r\f]
 letter		[A-Za-z_]
+digit		[0-9]
+operator	"("|")"|"["|"]"|"{"|"}"|->|,|"."|".."|!|~|"++"|--|"*"|"/"|%|"+"|-|<<|>>|<|<=|>|>=|==|!=|&|"^"|"|"|&&|"||"|"\?"|:|;|=|"+="|-=|"*="|"/="|%=|&=|"^="|"|="|<<=|>>=
+id			{letter}({letter}|{digit})*
+integer 	([1-9]+{digit}*)|0
+float		{digit}+\.{digit}*([eE][\+-]?{digit}+)?
 %start AA BB
 
 %%
-{letter}	{ }
-
+<AA>{id} {yylval = enter(IDENTIFIER, yytext, strlen(yytext)); printf("%s %s %u\n", tokenType2Text(yylval->tokenType), yylval->name, yylval->count);}
+<AA>{operator} {printf("OP %s\n", yytext);}
+<AA>{integer} {printf("INT %s\n", yytext);}
+<AA>{float}/([^\.]) {printf("F %s\n", yytext);}
+<AA>{ws} {;}
+<AA>. {printf("invalid token %s\n", yytext);}
+"/*" {commentdepth++; BEGIN BB;}
+"*/"/[^*] {commentdepth--; if(commentdepth == 0) BEGIN AA;}
+<BB>. {;}
 %%
-void initHash() 
+void initHash()
 {
 	int i;
 
 	char* keyWord[]={
-		"int","return", "\0"
+		"auto","break","case","char","continue","default","do","double","else",
+		"extern","float","for","goto","if","int","long","register","return","short",
+		"sizeof","static","struct","switch","typedef","union","unsigend","void","while",
+		"\0"
 	};
 
 	/* Initilize Hash Tabel with Keywords */
 	for (i = 0; strcmp(keyWord[i], "\0") !=0; i++) {
-		//enter(KEYWORD, keyWord[i],strlen(keyWord[i]));
+		enter(KEYWORD, keyWord[i], strlen(keyWord[i]));
 	}
 }
 

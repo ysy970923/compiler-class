@@ -8,7 +8,11 @@
 #define __SUBC_H__
 
 #include <stdio.h>
-#include <strings.h>
+#include <string.h>
+#include <stdlib.h>
+
+#define KEYWORD 1
+#define IDENTIFIER 2
 
 typedef struct id {
 	int tokenType;
@@ -17,6 +21,7 @@ typedef struct id {
 } id;
 
 /* For hash table */
+char* tokenType2Text(int tokenType);
 unsigned hash(char *name);
 id *enter(int tokenType, char *name, int length);
 
