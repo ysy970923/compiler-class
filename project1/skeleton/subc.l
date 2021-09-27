@@ -36,15 +36,21 @@ float		{digit}+\.{digit}*([eE][\+-]?{digit}+)?
 %start AA BB
 
 %%
-<AA>{id} {yylval = enter(IDENTIFIER, yytext, strlen(yytext)); printf("%s %s %u\n", tokenType2Text(yylval->tokenType), yylval->name, yylval->count);}
-<AA>{operator} {printf("OP %s\n", yytext);}
-<AA>{integer} {printf("INT %s\n", yytext);}
-<AA>{float}/([^\.]) {printf("F %s\n", yytext);}
-<AA>{ws} {;}
+<AA>{id} {
+			yylval = enter(IDENTIFIER, yytext, strlen(yytext)); 
+			if (yylval->tokenType == KEYWORD)
+				printf("KEY\t%s\t%u\n", yylval->name, yylval->count);
+			else if (yylval->tokenType == IDENTIFIER)
+				printf("ID\t%s\t%u\n", yylval->name, yylval->count);
+			}
+<AA>{operator} {printf("OP\t%s\n", yytext);}
+<AA>{integer} {printf("INT\t%s\n", yytext);}
+<AA>{float}/([^\.]) {printf("F\t%s\n", yytext);}		// 1.. is not 1. ., is 1 ..
+<AA>{ws} {;}	// ignore all whitespaces (' ', '\t', '\n' '\v' '\r' '\f')
 <AA>. {printf("invalid token %s\n", yytext);}
-"/*" {commentdepth++; BEGIN BB;}
-"*/"/[^*] {commentdepth--; if(commentdepth == 0) BEGIN AA;}
-<BB>. {;}
+"/*" {commentdepth++; BEGIN BB;}	// comment start, increment commentdepth
+"*/"/[^*] {commentdepth--; if(commentdepth == 0) BEGIN AA;}		// comment end, decrement commentdepth, if commentdepth == 0: escape comment
+<BB>. {;}	// inside comment, ignore all strings except /*, */
 %%
 void initHash()
 {

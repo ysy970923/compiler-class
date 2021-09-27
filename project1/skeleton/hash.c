@@ -17,28 +17,41 @@ typedef struct nlist
 
 static nlist *hashTable[HASH_TABLE_SIZE];
 
-char *tokenType2Text(int tokenType)
-{
-	if (tokenType == KEYWORD)
-		return "KEY";
-	if (tokenType == IDENTIFIER)
-		return "ID";
-}
-
-// hash function
+/*
+ * Function:  hash
+ * --------------------
+ *	simple hash function with using prime number 7, 31
+ * 
+ * 	name: token name
+ *  length: token string length
+ *
+ *  returns: (unsigned type) hash value from given token name 
+ */
 unsigned hash(char *name, int length)
 {
+	int i;
 	unsigned hash = 7;
-	for (int i = 0; i < strlen(name); i++)
+	for (i = 0; i < length; i++)
 	{
 		hash = hash * 31 + name[i];
 	}
 	return hash;
 }
 
+/*
+ * Function:  enter
+ * --------------------
+ *	enter token to hashTable:
+ *		if token name already in hashTable: increment count value;
+ *		else: add token to hashTable
+ *
+ * 	tokenType: type of token
+ *  length: token string length
+ *
+ *  returns: the unsigned hash value from given token name 
+ */
 id *enter(int tokenType, char *name, int length)
 {
-	/* implementation is given here */
 	unsigned key = hash(name, length) % HASH_TABLE_SIZE;
 	nlist *node = hashTable[key];
 	while (node)

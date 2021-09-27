@@ -11,18 +11,21 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define KEYWORD 1
-#define IDENTIFIER 2
+enum
+{
+	KEYWORD = 1,
+	IDENTIFIER = 2,
+};
 
-typedef struct id {
+typedef struct id
+{
 	int tokenType;
 	char *name;
 	int count;
 } id;
 
 /* For hash table */
-char* tokenType2Text(int tokenType);
-unsigned hash(char *name);
+unsigned hash(char *name, int length);
 id *enter(int tokenType, char *name, int length);
 
 #endif
