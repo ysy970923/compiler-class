@@ -61,8 +61,9 @@ id *enter(int tokenType, char *name, int length)
 			node->data->count++;
 			return node->data;
 		}
-		if (node->next)
+		else if (node->next) {
 			node = node->next;
+		}
 		else
 			break;
 	}

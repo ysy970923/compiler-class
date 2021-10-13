@@ -48,8 +48,10 @@ float		{digit}+\.{digit}*([eE][\+-]?{digit}+)?
 <AA>{float}/([^\.]) {printf("F\t%s\n", yytext);}		// 1.. is not 1. ., is 1 ..
 <AA>{ws} {;}	// ignore all whitespaces (' ', '\t', '\n' '\v' '\r' '\f')
 <AA>. {printf("invalid token %s\n", yytext);}
-"/*" {commentdepth++; BEGIN BB;}	// comment start, increment commentdepth
-"*/"/[^*] {commentdepth--; if(commentdepth == 0) BEGIN AA;}		// comment end, decrement commentdepth, if commentdepth == 0: escape comment
+<AA>"/*" {commentdepth++; BEGIN BB;}	// comment start, increment commentdepth
+<BB>"/*" {commentdepth++;}				// increment commentdepth;
+<BB>"*/"/[^*] {commentdepth--; if(commentdepth == 0) BEGIN AA;}		// comment end, decrement commentdepth, if commentdepth == 0: escape comment
+<BB>{ws} {;}
 <BB>. {;}	// inside comment, ignore all strings except /*, */
 %%
 void initHash()
