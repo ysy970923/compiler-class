@@ -42,7 +42,7 @@ int    yyerror (char* s);
 %token<stringVal>	CHAR_CONST STRING
 %token<intVal>		INTEGER_CONST
 
-%type<boolVal>       pointers
+%type<boolVal>      pointers
 %type<declptr>      args func_decl struct_specifier type_specifier const_expr unary expr or_expr or_list and_expr and_list binary
 
 %%
@@ -101,12 +101,17 @@ type_specifier:
 struct_specifier: 
         STRUCT ID '{'   
         { 
+            $<declptr>$ = globaldeclare($2, makestructdecl());
             push_scope();   
         }
         def_list    
         {   
             ste *fields = pop_scope();
-            $<declptr>$ = globaldeclare($2, makestructdecl(fields));
+            if ($<declptr>4)
+            {
+                $<declptr>4->fields = fields;
+            }
+            $<declptr>$ = $<declptr>4;
         }
         '}' 
         {
@@ -416,5 +421,5 @@ args:
 
 int    yyerror (char* s)
 {
-    fprintf (stderr, "%s:%d: error:%s\n", filename, read_line(), s);
+    printf ("%s:%d: error:%s\n", filename, read_line(), s);
 }

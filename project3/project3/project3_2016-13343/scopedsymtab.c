@@ -219,22 +219,23 @@ static bool check_isptr(decl *typedecl)
 }
 
 /*
- * Function:  check_redeclaration_safe
+ * Function:  check_isinscope
  * --------------------
- *	check if token id is not declared in current scope
+ *	check if token id is not declared in scope
  * 
  * 	id: token id
+ *  scopedepth: scope depth of scope to search
  *
- *  returns: true if not declared in current scope else false
+ *  returns: true if not declared in scope else false
  */
-static bool check_redeclaration_safe(id *id, ste *top)
+static bool check_isinscope(id *id, int scopedepth)
 {
-    ste *stenode = top;
+    ste *stenode = scopestack[scopedepth];
     while (stenode)
     {
-        if (stacktop > 0)
+        if (scopedepth > 0)
         {
-            if (stenode == scopestack[stacktop - 1])
+            if (stenode == scopestack[scopedepth - 1])
             {
                 break;
             }
@@ -319,7 +320,7 @@ void pushstelist(ste *stelist)
  */
 decl *declare(id *id, decl *decl)
 {
-    if (!check_redeclaration_safe(id, scopestack[stacktop]))
+    if (!check_isinscope(id, stacktop))
     {
         yyerror("redeclaration");
         return NULL;
@@ -331,7 +332,7 @@ decl *declare(id *id, decl *decl)
 /*
  * Function:  declare
  * --------------------
- *	declare new token in symbol table
+ *	declare new token in symbol table at global scope
  * 
  * 	id: token id
  *  decl: token declaration
@@ -340,7 +341,7 @@ decl *declare(id *id, decl *decl)
  */
 decl *globaldeclare(id *id, decl *decl)
 {
-    if (!check_redeclaration_safe(id, scopestack[stacktop]))
+    if (!check_isinscope(id, 0))
     {
         yyerror("redeclaration");
         return NULL;
@@ -531,12 +532,11 @@ decl *makeptrdecl(decl *typedecl)
  * 
  *  returns: struct declaration
  */
-decl *makestructdecl(ste *fields)
+decl *makestructdecl()
 {
     decl *declnode = (decl *)malloc(sizeof(decl));
     declnode->declclass = TYPE_;
     declnode->typeclass = STRUCT_;
-    declnode->fields = fields;
     return declnode;
 }
 

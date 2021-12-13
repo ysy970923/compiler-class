@@ -123,7 +123,13 @@ int main(int argc, char* argv[])
         printf("Can't open input stream!\n");
         exit(1);
     }
-    filename = strrchr(argv[1], '/') + 1;
+    if (strchr(argv[1], '/'))
+    {
+        filename = strrchr(argv[1], '/') + 1;
+    }
+    else {
+        filename = argv[1];
+    }
     inittype();
     yyparse();
     fclose(yyin);

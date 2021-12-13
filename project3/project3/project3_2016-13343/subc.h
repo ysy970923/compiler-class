@@ -87,7 +87,7 @@ decl *maketypedecl(int typeclass);
 decl *makeconstdecl(decl *typedecl);
 decl *makearraydecl(decl *num_index, decl *elementvar);
 decl *makeptrdecl(decl *typedecl);
-decl *makestructdecl(ste *fields);
+decl *makestructdecl();
 decl *makeprocdecl();
 
 decl *assign_op(decl *lhs, decl *rhs);
