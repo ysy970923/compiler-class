@@ -1,0 +1,29 @@
+ext_def_list->epsilon
+type_specifier->TYPE
+opt_specifier->type_specifier
+type_specifier->TYPE
+var_decl->ID
+param_decl->type_specifier var_decl
+var_list->param_decl
+type_specifier->TYPE
+var_decl->ID
+param_decl->type_specifier var_decl
+var_list->var_list ',' param_decl
+funct_decl->ID '(' var_list ')'
+def_list->epsilon
+local_defs->def_list
+stmt_list->epsilon
+unary->INTEGER_CONST
+binary->unary
+and_list->binary
+and_expr->and_list
+or_list->and_expr
+or_expr->or_list
+expr->or_expr
+stmt->RETURN expr ';'
+stmt_list->stmt_list stmt
+compound_stmt->'{' local_defs stmt_list '}'
+ext_def->opt_specifier funct_decl compound_stmt
+ext_def_list->ext_def_list ext_def
+type_specifier->TYPE
+opt_specifier->type_specifier
