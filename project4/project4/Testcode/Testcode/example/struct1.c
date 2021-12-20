@@ -22,6 +22,8 @@ int main(){
 	teststr[i].y = i - 10;
 	j = teststr[i].y;
 
+    i = 10;
+
 	write_int(j);
 	write_string("\n");
 }

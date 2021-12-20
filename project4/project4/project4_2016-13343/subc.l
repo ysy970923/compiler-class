@@ -23,8 +23,11 @@ special-char	\\[nt]
 
 %x COMMENT
 %%
+"read_int" { return READ_INT; }
+"read_char" { return READ_CHAR; }
 "write_int" { return WRITE_INT; }
 "write_string" { return WRITE_STRING; }
+"write_char" { return WRITE_CHAR; }
 "int"|"char"   {
 		            yylval.idptr = enter(ID, yytext, yyleng);
                     return TYPE; 
@@ -68,14 +71,14 @@ special-char	\\[nt]
 
 \"({special-char}|[^\\\"\n])*\"	{
         /* String Variable */
-	    yylval.stringVal = (char *)malloc(strlen(yytext) * sizeof(char));
-        strcpy(yylval.stringVal, yytext);
+	    yylval.stringVal = (char *)malloc((strlen(yytext)-2) * sizeof(char));
+        memcpy(yylval.stringVal, yytext+1, strlen(yytext) - 2);
         return STRING;
     }
 
 '({special-char}|[^\\'\n])'	{
         /* Character Variable */
-        yylval.charVal = yytext[0];
+        yylval.charVal = yytext[1];
         return CHAR_CONST;
     }
 

@@ -59,21 +59,24 @@ extern int yydebug;
     DECOP = 265,
     STRUCTOP = 266,
     WRITE_INT = 267,
-    WRITE_STRING = 268,
-    ID = 269,
-    TYPE = 270,
-    VOID = 271,
-    NULL_ = 272,
-    STRUCT = 273,
-    RETURN = 274,
-    IF = 275,
-    WHILE = 276,
-    FOR = 277,
-    BREAK = 278,
-    CONTINUE = 279,
-    STRING = 280,
-    INTEGER_CONST = 281,
-    CHAR_CONST = 282
+    WRITE_CHAR = 268,
+    WRITE_STRING = 269,
+    READ_INT = 270,
+    READ_CHAR = 271,
+    ID = 272,
+    TYPE = 273,
+    VOID = 274,
+    NULL_ = 275,
+    STRUCT = 276,
+    RETURN = 277,
+    IF = 278,
+    WHILE = 279,
+    FOR = 280,
+    BREAK = 281,
+    CONTINUE = 282,
+    STRING = 283,
+    INTEGER_CONST = 284,
+    CHAR_CONST = 285
   };
 #endif
 
@@ -90,7 +93,7 @@ union YYSTYPE
     id      *idptr;
     decl    *declptr;
 
-#line 94 "subc.tab.h"
+#line 97 "subc.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

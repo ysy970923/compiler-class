@@ -39,7 +39,7 @@ int    yyerror (char* s);
 %left '[' ']' '(' ')' '.' STRUCTOP
 
 /* Token and Types */
-%token              WRITE_INT WRITE_STRING
+%token              WRITE_INT WRITE_CHAR WRITE_STRING READ_INT READ_CHAR
 %token<idptr>       ID TYPE VOID NULL_ STRUCT RETURN IF ELSE WHILE FOR BREAK CONTINUE LOGICAL_OR LOGICAL_AND RELOP EQUOP INCOP DECOP STRUCTOP
 %token<stringVal>	STRING
 %token<intVal>		INTEGER_CONST
@@ -52,6 +52,7 @@ int    yyerror (char* s);
 %%
 program:
         {
+            printf("\t\tshift_sp 1\n");
             printf("\t\tpush_const EXIT\n");
             printf("\t\tpush_reg fp\n");
             printf("\t\tpush_reg sp\n");
@@ -171,14 +172,6 @@ func_decl:
             $$ = declare($3, procdecl);
             printf("%s:\n", $3->name);
         }
-		| type_specifier pointers ID '(' VOID ')'
-        {
-            decl *procdecl = makeprocdecl();
-            procdecl->name = $3;
-            procdecl->returntype = makeconstdecl($1);
-            $$ = declare($3, procdecl);
-            printf("%s:\n", $3->name);
-        }
 		| type_specifier pointers ID '('
         {
             decl *procdecl = makeprocdecl();
@@ -189,7 +182,7 @@ func_decl:
                 declare(returnid, makeconstdecl($1));
             }
         }
-        param_list ')'
+        real_param_list ')'
         {
             if ($$ = $<declptr>5)
             {
@@ -210,6 +203,11 @@ pointers:
         {
             $$ = false;
         }
+        ;
+
+real_param_list:
+        param_list
+        | VOID
         ;
 
 param_list:
@@ -425,12 +423,27 @@ stmt:
             }
             printf("\t\twrite_int\n");
         }
-        | WRITE_STRING '(' STRING ')' ';'
+        | WRITE_CHAR '(' unary ')' ';'
+        { 
+            if (check_isvar($3))
+            {
+                printf("\t\tfetch\n");
+            }
+            printf("\t\twrite_char\n");
+        }
+        | WRITE_STRING '(' unary ')' ';'
         {
-            printf("str_%d. string %s\n", n_string, $3);
-            printf("\t\tpush_const str_%d\n", n_string);
+            if (check_isarray($3->type))
+            {
+                printf("\t\tpush_reg sp\n");
+                printf("\t\tpush_const %d\n", $3->size);
+                printf("\t\tsub\n");
+            }
+            else
+            {
+                printf("\t\tpush_const str_%d\n", $3->intval);
+            }
             printf("\t\twrite_string\n");
-            n_string++;
         }
         ;
 
@@ -628,12 +641,13 @@ unary:
         {
             $$ = makeconstdecl(chartype);
             $$->charval = $1;
-            printf("\t\tpush_const %c\n", $$->charval);
+            printf("\t\tpush_const %d\n", $$->charval);
         }
 		| STRING    
         {
             $$ = makeconstdecl(makeptrdecl(chartype));
-            printf("%s\n", $1);
+            $$->intval = n_string++;
+            printf("str_%d. string \"%s\"\n", $$->intval, $1);
         }
 		| ID    
         {
@@ -656,7 +670,8 @@ unary:
         }
         | NULL_
         {
-            $$ = makeconstdecl(voidtype);
+            $$ = makeconstdecl(makeptrdecl(voidtype));
+            $$->intval = 0;
         }
 		| '-' unary	%prec '!'   
         {
@@ -770,7 +785,6 @@ unary:
         {
             $$ = functioncall($1, $4);
             declare(NULL, $$);
-            printf("\t\tpush_reg sp\n");
             int num_formals;
             num_formals = 0;
             decl* actuals = $4;
@@ -779,6 +793,7 @@ unary:
                 num_formals = num_formals + actuals->size;
                 actuals = actuals->next;
             }
+            printf("\t\tpush_reg sp\n");
             printf("\t\tpush_const -%d\n", num_formals);
             printf("\t\tadd\n");
             printf("\t\tpop_reg fp\n");
@@ -788,8 +803,25 @@ unary:
 		| unary '(' ')'
         {
             $$ = functioncall($1, NULL);
+            declare(NULL, $$);
+            printf("\t\tshift_sp %d\n", $1->returntype->size);
+            printf("\t\tpush_const label_%d\n", n_label);
+            printf("\t\tpush_reg fp\n");
+            printf("\t\tpush_reg sp\n");
+            printf("\t\tpop_reg fp\n");
+            printf("\t\tjump %s\n", $1->name->name);
+            printf("label_%d:\n", n_label++);
         }
-        
+        | READ_INT '(' ')'
+        {
+            $$ = makeconstdecl(inttype);
+            printf("\t\tread_int\n");
+        }
+        | READ_CHAR '(' ')'
+        {
+            $$ = makeconstdecl(chartype);
+            printf("\t\tread_char\n");
+        }
         ;
 
 args:

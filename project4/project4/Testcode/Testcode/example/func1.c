@@ -3,14 +3,10 @@ int outprint(int* j){
 }
 
 int main(){
-	int i;
-	int k;
-	int *l;
-
-	k = 10;
-	l = &k;
 	
-	i = outprint(l);
-	write_int(k);
-	write_string("\n");
+    char *a;
+    write_string("abc\n");
+    a = "car";
+	write_string(a);
+    write_string("\n");
 }

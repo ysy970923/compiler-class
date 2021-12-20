@@ -19,7 +19,8 @@ int main(){
 
 	sample_str.strstr.z = 1000;
 	i = sample_str.strstr.z;
+    l = &i;
 
-	write_int(i);
+	write_int(*l);
 	write_string("\n");
 }

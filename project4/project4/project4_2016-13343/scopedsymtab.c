@@ -75,7 +75,7 @@ static bool check_isfunction(decl *decl)
  *
  *  returns: true if type declaration is array else false
  */
-static bool check_isarray(decl *typedecl)
+bool check_isarray(decl *typedecl)
 {
     return (typedecl->typeclass == array);
 }
@@ -142,6 +142,11 @@ static void insert(id *id, decl *decl, bool isstruct)
     if (!decl)
     {
         return;
+    }
+
+    if (!id)
+    {
+        offsetstack[stacktop] = offsetstack[stacktop] + decl->size;
     }
 
     if (isstruct)
@@ -490,6 +495,7 @@ decl *makevardecl(decl *typedecl, bool isptr)
     if (isptr)
     {
         declnode->type = makeptrdecl(typedecl);
+        declnode->type->size = 1;
         declnode->size = 1;
     }
     else
@@ -585,6 +591,7 @@ decl *makeptrdecl(decl *typedecl)
     declnode->declclass = TYPE_;
     declnode->typeclass = ptr;
     declnode->ptrto = typedecl;
+    declnode->size = 1;
     return declnode;
 }
 
@@ -644,6 +651,7 @@ decl *assign_op(decl *lhs, decl *rhs)
         yyerror("LHS and RHS are not same type");
         return NULL;
     }
+    lhs->intval = rhs->intval;
     return lhs;
 }
 
