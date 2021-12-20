@@ -3,10 +3,17 @@ int outprint(int* j){
 }
 
 int main(){
-	
+	char b[10];
     char *a;
-    write_string("abc\n");
+    int* i;
+    *i = 10;
+    b[0] = 'a';
+    b[1] = 'b';
+    b[2] = 'c';
+    outprint(i);
     a = "car";
+	write_string(b);
+    write_string("\n");
 	write_string(a);
     write_string("\n");
 }

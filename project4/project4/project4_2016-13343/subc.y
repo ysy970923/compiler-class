@@ -435,9 +435,9 @@ stmt:
         {
             if (check_isarray($3->type))
             {
-                printf("\t\tpush_reg sp\n");
-                printf("\t\tpush_const %d\n", $3->size);
-                printf("\t\tsub\n");
+                printf("\t\tpush_reg fp\n");
+                printf("\t\tpush_const %d\n", $3->offset);
+                printf("\t\tadd\n");
             }
             else
             {
@@ -660,7 +660,6 @@ unary:
             {
                 printf("\t\tpush_const Lglob+%d\n", $$->offset);
             }
-            
             else
             {
                 printf("\t\tpush_reg fp\n");
