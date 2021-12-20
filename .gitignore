@@ -1,3 +1,5 @@
 *.yy.o
 *.yy.c
 *.o
+*.pptx
+*.docx
